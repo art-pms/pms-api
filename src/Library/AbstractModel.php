@@ -1,8 +1,8 @@
 <?php
 
-namespace Pms\Api\Models;
+namespace Pms\Api\Library;
 
-use \Purekid\Mongodm\Test\Model;
+use \Purekid\Mongodm\Model;
 use MongoId;
 
 abstract class AbstractModel extends Model
@@ -13,30 +13,41 @@ abstract class AbstractModel extends Model
      * @param array $fields
      * @param null $limit
      * @param null $skip
-     * @return \Purekid\Mongodm\Collection
+     * @return mixed
+     * @throws \Exception
      */
     public static  function find($criteria = array(), $sort = array(), $fields = array() , $limit = null , $skip = null)
     {
         $criteria = self::setReference($criteria);
 
-        if(isset($criteria['_id'])){
-            $criteria['_id'] = new MongoId($criteria['_id']);
+        if(isset($criteria['_id']) && !($criteria['_id'] instanceof MongoId)){
+            try {
+                $criteria['_id'] = new MongoId($criteria['_id']);
+            } catch (\Exception $e) {
+                throw new \Exception(sprintf('Wrong id [%s].', $criteria['_id']), 404);
+            }
         }
 
         return parent::find($criteria, $sort, $fields, $limit, $skip);
     }
 
+
     /**
      * @param array $criteria
      * @param array $fields
-     * @return Model
+     * @return mixed
+     * @throws \Exception
      */
     public static function one($criteria = array(),$fields = array())
     {
         $criteria = self::setReference($criteria);
 
-        if(isset($criteria['_id'])){
-            $criteria['_id'] = new MongoId($criteria['_id']);
+        if(isset($criteria['_id']) && !($criteria['_id'] instanceof MongoId)){
+            try {
+                $criteria['_id'] = new MongoId($criteria['_id']);
+            } catch (\Exception $e) {
+                throw new \Exception(sprintf('Wrong id [%s].', $criteria['_id']), 404);
+            }
         }
         return parent::one($criteria, $fields);
     }

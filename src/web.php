@@ -2,6 +2,7 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Pms\Api\Application;
+use Pms\Api\WebAction\StaffWebAction;
 
 $app['api.interface'] = 'web';
 
@@ -11,6 +12,7 @@ $app['api.interface'] = 'web';
  * Replace $request->request with JSON POST-body
  */
 $app->before(function (Request $request) {
+
     if (false !== strpos($request->headers->get('Content-Type'), 'json') && $request->getContent() != "" && $request->getContent() != "null") {
         $data = json_decode($request->getContent(), true);
 
@@ -21,6 +23,7 @@ $app->before(function (Request $request) {
 
         $request->request->replace(is_array($data) ? $data : array());
     }
+
 });
 
 /**
@@ -44,3 +47,12 @@ $app->get('/api/info', function (Application $app) {
             'surname' => 'Kuznetsov'
         ]]);
 });
+
+// Staff WebAction
+$app['staff.webaction'] = $app->share(function() use ($app) {
+    return new StaffWebAction($app);
+});
+
+$app->get('/staff', 'staff.webaction:read');
+$app->post('/staff', 'staff.webaction:create');
+

@@ -2,8 +2,7 @@
 
 namespace Pms\Api\Model;
 
-
-use Pms\Api\Models\AbstractModel;
+use Pms\Api\Library\AbstractModel;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validation;
@@ -19,7 +18,6 @@ class Staff extends AbstractModel
         'firstName' => array('type' => 'string'),
         'lastName' => array('type' => 'string'),
         'gender' => array('type' => 'string'),
-        'phone' => array('type' => 'string'),
         'role' => array('type' => 'string')
     );
 
@@ -59,9 +57,6 @@ class Staff extends AbstractModel
                     new Assert\Length(array('min' => 3)),
                     new Assert\NotBlank()
                 ),
-                'phone' => array(
-                    new Assert\Optional(new Assert\Type(array('type' => 'string')))
-                ),
                 'role' => array(
                     new Assert\Type(array('type' => 'string')),
                     new Assert\NotBlank()
@@ -81,8 +76,84 @@ class Staff extends AbstractModel
         parent::__preInsert();
     }
 
-    public function addStaff(array $data)
+    public function create(array $data)
     {
+        //TODO: To be improved
+        if(isset($data['password']) && !empty($data['password'])){
+            $data['password'] = md5($data['password']);
+        }
 
+        $this->update($data);
+        $this->save();
+
+        return $this;
     }
+
+    public function updateStaff(array $data)
+    {
+        //TODO: To be improved
+        if(isset($data['password']) && !empty($data['password'])){
+            $data['password'] = md5($data['password']);
+        }
+
+        $criteria = array(
+            '_id' => $data['_id'],
+            '_dOn' => array(
+                '$exists' => false
+            )
+        );
+
+        $staff = $this::one($criteria);
+        unset($data['_id']);
+        $staff->update($data);
+        $staff->save();
+
+        return $staff;
+    }
+
+    public function read()
+    {
+        $criteria = array(
+            '_dOn' => array(
+                '$exists' => false
+            )
+        );
+
+        $fields = array(
+            'email', 'firstName', 'lastName', 'gender', 'role'
+        );
+
+        $sort = array();
+
+        $items = $this::find($criteria, $sort, $fields);
+
+        if($items) {
+            return $items->toArray();
+        } else {
+            throw new \Exception('No staff was found.', 404);
+        }
+    }
+
+    public function readOne($staffId)
+    {
+        $criteria = array(
+            '_id' => $staffId,
+            '_dOn' => array(
+                '$exists' => false
+            )
+        );
+
+        $fields = array(
+            'email', 'firstName', 'lastName', 'gender', 'role'
+        );
+
+        $staff = $this::one($criteria, $fields);
+
+        if($staffId) {
+            return $staff->toArray(array(), true);
+        } else {
+            return array();
+        }
+    }
+
 }
