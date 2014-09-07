@@ -1,6 +1,8 @@
 <?php
 
-use \Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request;
+use Pms\Api\Application;
+use Pms\Api\WebAction\StaffWebAction;
 
 $app['api.interface'] = 'web';
 
@@ -10,6 +12,7 @@ $app['api.interface'] = 'web';
  * Replace $request->request with JSON POST-body
  */
 $app->before(function (Request $request) {
+
     if (false !== strpos($request->headers->get('Content-Type'), 'json') && $request->getContent() != "" && $request->getContent() != "null") {
         $data = json_decode($request->getContent(), true);
 
@@ -20,6 +23,7 @@ $app->before(function (Request $request) {
 
         $request->request->replace(is_array($data) ? $data : array());
     }
+
 });
 
 /**
@@ -28,9 +32,27 @@ $app->before(function (Request $request) {
 $app->after($app['cors']);
 
 // Home
-$app->get('/', function (\Silex\Application $app, Request $request) {
+$app->get('/', function (Application $app, Request $request) {
     return $app->json(array(
         'message' => 'Welcome to our API. Please view the resource reference.',
         'env' => $app['env']
     ));
 });
+
+$app->get('/api/info', function (Application $app) {
+    return $app->json([
+        'status' => true,
+        'info'   => [
+            'name'    => 'Ivan',
+            'surname' => 'Kuznetsov'
+        ]]);
+});
+
+// Staff WebAction
+$app['staff.webaction'] = $app->share(function() use ($app) {
+    return new StaffWebAction($app);
+});
+
+$app->get('/staff', 'staff.webaction:read');
+$app->post('/staff', 'staff.webaction:create');
+

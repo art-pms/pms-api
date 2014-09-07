@@ -1,7 +1,7 @@
 <?php
 
 use Pms\Api\Application;
-use \Wildsurfer\Provider\MongodmServiceProvider;
+use Wildsurfer\Provider\MongodmServiceProvider;
 
 // Set default timezone
 date_default_timezone_set('UTC');
@@ -11,8 +11,7 @@ if (!defined('__ACTIVE_DIRECTORY__')) {
     define('__ACTIVE_DIRECTORY__', __DIR__);
 }
 
-
-$app = Application::build();
+$app = new Application();
 
 $app['env'] = $env;
 $app['api.interface'] = 'unknown';
