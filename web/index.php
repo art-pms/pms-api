@@ -12,4 +12,13 @@ else {
     $app = require __DIR__ . '/bootstrap.php';
 }
 
+$app->get('/api/info', function (Application $app) {
+    return $app->json([
+        'status' => true,
+        'info'   => [
+            'name'    => 'Ivan',
+            'surname' => 'Kuznetsov'
+        ]]);
+});
+
 $app->run();

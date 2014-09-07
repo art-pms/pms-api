@@ -1,6 +1,7 @@
 <?php
 
-use \Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request;
+use Pms\Api\Application;
 
 $app['api.interface'] = 'web';
 
@@ -28,9 +29,18 @@ $app->before(function (Request $request) {
 $app->after($app['cors']);
 
 // Home
-$app->get('/', function (\Silex\Application $app, Request $request) {
+$app->get('/', function (Application $app, Request $request) {
     return $app->json(array(
         'message' => 'Welcome to our API. Please view the resource reference.',
         'env' => $app['env']
     ));
+});
+
+$app->get('/api/info', function (Application $app) {
+    return $app->json([
+        'status' => true,
+        'info'   => [
+            'name'    => 'Ivan',
+            'surname' => 'Kuznetsov'
+        ]]);
 });
