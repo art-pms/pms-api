@@ -2,21 +2,21 @@
 
 namespace Pms\Api;
 
-class Application {
+use Silex\Application as SilexApplication;
+use Pms\Api\Provider\Login\LoginBuilder;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-    protected static $app;
-
-    public static function &build($app = null)
+class Application extends SilexApplication
+{
+    public function __construct(array $values = [])
     {
-        if (!self::$app) {
-            if ($app == null) {
-                self::$app = new \Silex\Application();
-            }
-            else {
-                self::$app = $app;
-            }
-        }
-        return self::$app;
-    }
+        parent::__construct($values);
 
+        LoginBuilder::mountProviderIntoApplication('/auth', $this);
+
+        $this->after(function (Request $request, Response $response) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        });
+    }
 }

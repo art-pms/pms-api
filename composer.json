@@ -1,5 +1,5 @@
 {
-    "name": "pms/api",
+    "name": "daruwanov/pms-api",
     "description": "PMS API",
     "type": "pms-module",
     "version": "0.0.1",
