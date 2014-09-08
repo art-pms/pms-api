@@ -3,6 +3,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use Pms\Api\Application;
 use Pms\Api\WebAction\StaffWebAction;
+use Pms\Api\WebAction\RoleWebAction;
 
 $app['api.interface'] = 'web';
 
@@ -53,6 +54,14 @@ $app['staff.webaction'] = $app->share(function() use ($app) {
     return new StaffWebAction($app);
 });
 
+// Role WebAction
+$app['role.webaction'] = $app->share(function() use ($app) {
+    return new RoleWebAction($app);
+});
+
+// Staff route
 $app->get('/staff', 'staff.webaction:read');
 $app->post('/staff', 'staff.webaction:create');
 
+// Role route
+$app->get('/role', 'role.webaction:read');
