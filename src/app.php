@@ -33,6 +33,7 @@ $app->register(new Silex\Provider\ValidatorServiceProvider());
 // Config
 //---------------------
 
+
 // Config
 $app->register(new \Igorw\Silex\ConfigServiceProvider(__ACTIVE_DIRECTORY__ . '/../config/config.php'));
 //$app->register(new \Igorw\Silex\ConfigServiceProvider(__ACTIVE_DIRECTORY__ . '/../config/config-' . $env . '.php'));
